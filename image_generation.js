@@ -1,4 +1,3 @@
-// api/image_generation.js
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
@@ -34,9 +33,9 @@ const sendGenerationRequest = async (host, params) => {
 };
 
 const resizeAndCompositeImages = async () => {
-  const img1 = await Jimp.read(path.resolve(__dirname, '../downloadedImage1.png'));
-  const img2 = await Jimp.read(path.resolve(__dirname, '../downloadedImage2.png'));
-  const img3 = await Jimp.read(path.resolve(__dirname, '../downloadedImage3.png'));
+  const img1 = await Jimp.read(path.resolve(__dirname, 'images/downloadedImage1.png'));
+  const img2 = await Jimp.read(path.resolve(__dirname, 'images/downloadedImage2.png'));
+  const img3 = await Jimp.read(path.resolve(__dirname, 'images/downloadedImage3.png'));
 
   img1.resize(512, 512);
   img2.resize(512, 512);
@@ -51,14 +50,14 @@ const resizeAndCompositeImages = async () => {
   const thirdImageX = (width - img3.bitmap.width) / 2;
   compositeImg.composite(img3, thirdImageX, img1.bitmap.height);
 
-  await compositeImg.writeAsync(path.resolve(__dirname, '../inputImage.png'));
+  await compositeImg.writeAsync(path.resolve(__dirname, 'images/inputImage.png'));
   console.log('New image created with all three images pasted on it.');
 };
 
 const main = async () => {
   await resizeAndCompositeImages();
 
-  const image = path.resolve(__dirname, '../inputImage.png');
+  const image = path.resolve(__dirname, 'images/inputImage.png');
   const prompt = "A beautiful bouquet of flowers inspired by the uploaded flower images and aesthetics";
   const seed = 0;
   const outputFormat = "png";
@@ -78,7 +77,7 @@ const main = async () => {
   try {
     const response = await sendGenerationRequest(host, params);
     const outputImage = response.data;
-    const generatedImageFilename = path.resolve(__dirname, '../generatedImage.png');
+    const generatedImageFilename = path.resolve(__dirname, 'images/generatedImage.png');
     fs.writeFileSync(generatedImageFilename, outputImage);
     console.log(`Saved image ${generatedImageFilename}`);
   } catch (error) {

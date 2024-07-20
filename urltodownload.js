@@ -1,4 +1,3 @@
-// api/urltodownload.js
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
@@ -50,6 +49,13 @@ const downloadImage = async (url, savePath) => {
   }
 };
 
+// Create the directory in the same directory as the script
+const imagesDir = path.resolve(__dirname, 'images');
+
+if (!fs.existsSync(imagesDir)) {
+  fs.mkdirSync(imagesDir);
+}
+
 const main = async (email) => {
   try {
     const links = await getLinks(email);
@@ -57,20 +63,20 @@ const main = async (email) => {
       const firstLink = links[0];
       let url = firstLink.url || 'URL not found';
       console.log(`Downloading first image from: ${url}`);
-      await downloadImage(url, path.resolve(__dirname, '../downloadedImage1.png'));
+      await downloadImage(url, path.resolve(imagesDir, 'downloadedImage1.png'));
 
       if (links.length > 1) {
         const secondLink = links[1];
         url = secondLink.url || 'URL not found';
         console.log(`Downloading second image from: ${url}`);
-        await downloadImage(url, path.resolve(__dirname, '../downloadedImage2.png'));
+        await downloadImage(url, path.resolve(imagesDir, 'downloadedImage2.png'));
       }
 
       if (links.length > 2) {
         const thirdLink = links[2];
         url = thirdLink.url || 'URL not found';
         console.log(`Downloading third image from: ${url}`);
-        await downloadImage(url, path.resolve(__dirname, '../downloadedImage3.png'));
+        await downloadImage(url, path.resolve(imagesDir, 'downloadedImage3.png'));
       }
     } else {
       console.log('No links found.');
@@ -80,5 +86,21 @@ const main = async (email) => {
     process.exit(1);
   }
 };
+
+if (require.main === module) {
+  const email = process.argv[2];
+  if (!email) {
+    console.error('Please provide an email as an argument.');
+    process.exit(1);
+  }
+
+  main(email).then(() => {
+    console.log('Script executed successfully.');
+    process.exit(0);
+  }).catch((error) => {
+    console.error('Script execution failed:', error);
+    process.exit(1);
+  });
+}
 
 module.exports = { main };
